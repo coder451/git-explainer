@@ -1,0 +1,514 @@
+= How I use Git
+:source-highlighter: highlight.js
+
+== Preamble
+
+This page introduces how I use Git day-to-day, without much 
+detailed background.
+
+== Git Explainers
+
+Git for ages 4 and up 
+https://www.youtube.com/watch?v=1ffBJ4sVUb4
+
+Introduction to Git - talk by Scott Chacon 
+https://www.youtube.com/watch?v=xbLVvrb2-fY
+
+Scott Hanselman Git 101 Basics - Computer Stuff They Didn't Teach You #4 https://www.youtube.com/watch?v=WBg9mlpzEYU
+
+Git Internals by John Britton of GitHub - CS50 Tech Talk 
+https://www.youtube.com/watch?v=lG90LZotrpo
+
+Interactive repository visualizer 
+http://git-school.github.io/visualizing-git/
+
+Think like a Git 
+https://think-like-a-git.net/
+
+Git from the Bits Up 
+https://www.youtube.com/watch?v=MYP56QJpDr4
+
+Subversion and Mercurial Explainer, relevant to Git as well https://hginit.github.io/00.html
+
+Mary Rose Cook - Git from the Inside Out 
+https://maryrosecook.com/blog/post/git-from-the-inside-out
+
+MIT Git Lecture Lecture 6: Version Control (git) (2020) 
+https://www.youtube.com/watch?v=2sjqTHE0zok
+
+A classic, don't miss it 
+https://t.co/IMYMBki4sp 
+or, if you don't enjoy swearing, 
+https://dangitgit.com/
+
+A Plumber's Guide to Git 
+https://alexwlchan.net/a-plumbers-guide-to-git/
+
+Tom Preston-Werner A Git Parable 
+https://tom.preston-werner.com/2009/05/19/the-git-parable.html
+
+The Git Parable in video form 
+https://www.youtube.com/watch?v=jm7QsI-nNjk
+
+A Game - Oh My Git 
+https://ohmygit.org/
+
+Nick Farina - Git is Simpler Than You Think 
+https://nfarina.com/post/9868516270/git-is-simpler
+
+Interactive Visualizer - Learn Git Branching 
+https://learngitbranching.js.org/
+
+Intro for non-developers: Git For Humans 
+https://speakerdeck.com/alicebartlett/git-for-humans
+
+A book - Version Control by Example 
+https://ericsink.com/vcbe/index.html
+
+Git Immersion 
+https://gitimmersion.com/
+
+The Git-o-lite slide show 
+https://gitolite.com/gcs.html#(1)
+
+Git and GitHub for Poets 
+https://www.youtube.com/playlist?list=PLRqwX-V7Uu6ZF9C0YMKuns9sLDzK6zoiV
+
+The Atlassian Tutorial 
+https://www.atlassian.com/git
+
+Jim Weirich Source Control Made Easy 
+https://www.youtube.com/watch?v=bBQJP6D8aGY
+
+
+== Why Git? 
+If you are still using something else you might hesitate to 
+make the switch.
+Some reasons are:
+
+- Git integrates much more easily with automation than alternatives. 
+- Git is free, and it is under active development, and it has 
+an enormous user base. 
+- Git has been integrated all modern IDEs and code review tools. 
+- Many tools built around Git are available for complex or novel 
+situations.
+
+== Introduction
+
+Git gives you a complete copy of the repository, with all history, in 
+your local file system. 
+In this sense, it is a _distributed_ source code control system, 
+rather than being _centralized_.
+For large source code repositories it is surprising that this is 
+possible, and even more surprising that it is practical. 
+Having the whole repository lets you do things that are impossible
+for an ordinary user of a centralized source code repository.
+
+=== The Database and Remotes
+
+Your copy of the Git _database_ is stored in a directory named `.git` 
+that is in a parent directory named for the Git repository. 
+It contains all the changes since the repository was created. 
+You work with a _working copy_ that is in the parent directory of the 
+database. 
+The working copy is a directory tree you can edit as you wish. 
+At any time, you can use git commands to record selected working tree 
+changes in the Git database. 
+If you are working with others, you'll share your code and take
+advantage of code that others have shared.
+Git provides commands to _push_ your changes to a _remote_ and to _pull_
+changes from a remote.
+
+=== Commits and Staging
+
+Git stores history in _commits_. 
+A commit is an atomic package of changes recording new files, renamed 
+and deleted files, changed file content and changed file permissions.
+After from the first commit, each subsequent commit points to at least
+one _parent_ commit. 
+
+Commits can be named. 
+A named commit is called a branch.
+Commits can be edited, deleted, moved and applied to another branch. 
+This can also be helpful when organizing changes for code review, 
+for fixing errors retrospectively, and for quickly getting a change 
+you need from another branch. 
+The commands _rebase_ and _merge_ are used to combine branches.
+
+You create and edit a prospective commit using a part of the Git 
+database called the _staging area_. 
+The command `git add` records the changes you want in the commit you 
+are working on in the staging area. 
+The command `git restore` removes changes from the staging area. 
+Other commands also affect the staging area.
+When the staging area is ready, the command `git commit` creates the
+commit.
+
+=== Sharing Work
+
+Branches are either personal or shared. 
+Git does not make such a distinction, but it is a fundamental part of 
+workflows. 
+You always make your changes on a personal branch on your local machine. 
+You use an agreed process to merge your changes from your personal 
+branch to a shared branch on a remote server. 
+The details of the process vary between organnizations but usually 
+involve _testing_, _code review_, and official _approval_.
+Shared branches usually have protections to prevent accidental 
+modification or deletion. 
+Well-known, permanent shared branches are _branches of record_ and are often called `main` or `master`. 
+The name `master` used to be the default for the
+principal branch of record, but is now deprecated because of its 
+historical overtones. 
+A shared branch that is not the branch of record would be used by a 
+multi-person team developing a feature over an extended period.
+When the development is complete, it would be merged into the 
+branch of record.
+
+=== Work Style
+
+While you work, you should commit often. 
+This records what you did, keeps your changes safe, and makes it easy 
+to recover from the unintended. 
+
+It's easy to make a mistake when staging and committing. 
+Get to know how to reverse or recover from a change you didn't mean to
+make.
+Git often displays how to reverse a change, so look at the output 
+of a command you issued in error in case it provides such hints.
+
+=== Using Others' Work
+
+Usually you start from an existing repository on a corporate server 
+and fix bugs or add features. 
+You can also get the database from a reference repository 
+(colloquially a mirror) closer to your local environment, or even from 
+another repository on your file system. 
+
+To get a new copy of a repository from the corporate server to work on, 
+use `git clone`. 
+It copies the database onto your local machine in a working directory 
+named for the Git repository, and (unless you tell it otherwise) 
+creates a working copy for the default branch. 
+This is usually called `main`, but could be a _feature branch_ set up to 
+develop a large feature. 
+Most developers have a one or a small number of working copies that 
+they use for extended periods, so `git clone` is used _infrequently_,
+typically when starting a new project or on a new file system. 
+All other operations on the Git repository can be done with 
+command-line commands issued inside the working copy directory, the
+parent directory of the git database.
+
+When you clone a repository, the local database records an association 
+with the remote git repository and the branch it came from. 
+This association is called a _remote_, and the branch is referred to 
+as the _upstream branch_. 
+Your local Git repository can have more than one remote, but the 
+default (and usual) arrangement, set up automatically by `git clone`, 
+is to have a single remote called _origin_. 
+The remote contains information about the remote Git repository, 
+including its URL.
+
+Sometimes a remote is referred to as being _upstream_. 
+Sometimes we simply say _on the remote_. 
+When you see a reference to _origin_ in Git documentation or online, 
+it usually means this default remote. 
+Automation scripting often assumes the name of 
+the remote is `origin`, so think twice before using a different name.
+
+=== Creating Git Repositories
+
+Creating a new Git repository unrelated to existing Git repositories 
+is not usually part of day-to-day workflow.
+
+A Git repository is created in a file system with the command 
+`git init`. 
+This creates an empty database in the current directory. 
+
+At this point I always add an empty commit as the first one:
+
+[source,shell]
+----
+$ git commit --allow-empty -m "Initial commit"
+----
+
+This makes some kinds of automation easier because then every 
+subsequent commit has a parent.
+
+Subsequently, commits are added to represent changes in the directory. 
+Every commit except the first (root) commit has an opaque id and one 
+or more parent commits to which it is linked. The parent links make 
+the operations on the repository possible. 
+They form a kind of blockchain, because the commit id of each depends 
+on a hash of the details of all of its parents.
+
+== Organizing Commits
+
+Most of your time will be spent editing and testing, with the aim of 
+creating commits that will be reviewed and merged with the main branch 
+of development. 
+Git makes it easy to choose how to package your changes as commits. 
+Careful packaging makes review easier by grouping logical changes 
+together so that your change consists of relatively few commits,
+ideally just one.
+Remember that the commits you add to the branch of record will be
+permanent and will at times be read by developers searching for a 
+change that broke something.
+Try to arrange your commits to make that as easy as possible.
+
+== Summary of core workflow for a developer
+
+Commit often. Reorganize commits before review.
+
+Update the staging area with commands like `git add`, 
+`git restore --staged` and `git update-index`. 
+
+When satisfied with the contents of a prospective commit, 
+use `git commit`.
+
+After the command is complete, the staging area is empty. 
+
+Use `git reset` to undo the last commit, or 
+`git reset --hard` to remove the latest commit completely. 
+
+For flexible editing of commits, use `git rebase -i`. 
+
+You can move the most recent commit back to the staging area 
+with `git reset --soft`. 
+
+Use git commit --amend for updating the last commit.
+
+== Sharing your work
+
+If the world were simpler, having cloned the main branch of 
+development and updated it, we could share our work by using the 
+command push to update that branch on the remote. 
+However, with many developers wanting to do the same thing, this 
+would lead to conflicts. 
+
+To avoid that, branch protections are set up in corporate servers to
+make it impossible to update the branches of record directly. 
+Similarly branches dedicated to the development of a 
+feature over many months, and shared by the members of a team
+are carefully protected from direct update. 
+
+We can refer to any branch used by more than one developer as _shared_. 
+All shared branches should have merge protections, similar to 
+those for the branches of record. 
+Even if such restrictions have not been set up, the branch should be 
+treated as if they had been. 
+
+Since the shared branches cannot be updated directly, developers 
+do not work directly on them. 
+Instead, they create personal branches based on a shared branch 
+and work on that. 
+For example, `git clone` will clone the Git database from the
+server URL specified, and check out the default branch.
+Then you can use `git checkout -b` to create a branch and working copy 
+for a new personal branch based on that default branch. 
+A branch is created from a branch that exists on the local copy 
+already by adding a name to the chosen commit. 
+
+To get your work onto a shared branch on the remote, you have to share 
+your feature branch with the remote, using the command `git push`. 
+It is safe to share a personal branch like this because no one else 
+is working on it. 
+Once your branch is present in the remote, you can create a request 
+to merge your code with the branch of record. 
+This is usually called a _pull request_, PR for short, but may be 
+called something different depending on the Git server.
+
+The first time you share a branch _you_ created, you will have to 
+specify the remote and branch that is the destination. 
+This creates a corresponding remote for the branch. 
+Subsequent `git push` commands use that remote by default.
+
+Although it is not necessary to share until you think you are ready
+to merge, it is good practice to share your work more frequently. 
+This allows others to see it, as well as helping to prevent 
+loss of your work.
+
+== Staying Consistent
+
+From time to time you need to account for changes that have happened in a shared branch (on the remote) as a result of other merges than your own. 
+The command `git fetch` brings your database up-to-date with the 
+remote without changing your working copy. 
+Then you can use `git rebase` to apply your changes after the 
+upstream ones. 
+This applies your commits, in order, after all the commits on the 
+shared branch.
+This keeps the history linear, which makes it easy to understand and 
+reorganize. 
+As you do this rebase, there may be _merge conflicts_ as the commits 
+you have made are applied to files that have been changed since you 
+last updated. You can resolve those using the command `git mergetool`. 
+You can configure Git to use your favorite merge IDE as 
+the merge tool.
+After a reported conflict has been resolved, you return to the rebase, 
+and further conflicts may be reported.
+These are fixed and the process continues until no more conflicts are 
+reported.
+After the rebase is complete, use `git push` to share your work 
+with the remote. 
+If you have previously shared this branch (almost always the case), 
+add `-f`, because the rebase process rewrites the commits, 
+changing all their ids.
+
+Another way to do this is known as _stair-stepping_. 
+You make a _new personal branch_ from the shared branch, 
+and then locally _merge_ your old personal branch into it. 
+Then you discard your old personal branch and start using the new one. 
+This is inferior to rebasing because your commits will appear to 
+be mixed with all the commits from the developers working on the 
+shared branch. 
+If the team branch is itself rebased against main branch, 
+the commits will appear to be be mixed with commits from other branches 
+that have been merged to main. 
+For example, if there are ten other developers working at the same rate,
+30 commits for your change might be mixed with 300 unrelated commits
+that were added by the other developers over the same time period.
+
+This makes it difficult or impossible to usefully reorganize commits 
+for posterity. 
+An even worse problem is that your commits retain their original 
+identity, including dates, when merged. 
+This makes it look like your changes were merged long before they 
+actually were. 
+This is confusing when trying to work out when something changed.
+
+== Life Cycle for Resolving an Issue
+
+=== Get the up-to-date code
+
+Make a new branch for the issue.
+We'll assume the issue is identified by `TEAM-1234`.
+You will likely already have a Git database and working copy for
+the code in your local file system. 
+If not, get one using `git clone`.
+Then make a branch for the work.
+First make sure you are on the branch of record:
+
+[source,shell]
+----
+$ git checkout main
+----
+Then bring the dadabase up-to-date:
+[source,shell]
+----
+$ git pull
+----
+and make the new branch with a name based on the issue name:
+[source,shell]
+----
+$ git checkout -b TEAM-1234_issue_info
+----
+Here `issue_info` is a brief summary of the issue, all lowercase,
+with underscores instead of spaces.
+
+=== Edit the code and commit the changes
+
+At this point you are ready to begin editing the code. 
+After your edits, add the file updates and deletions to the staging 
+area:
+
+[source,shell]
+----
+$ git add -u
+----
+
+If you added a file, that will be shown with the following command:
+[source,shell]
+----
+$ git status
+----
+You can then add it explicitly using its name:
+[source,shell]
+----
+$ git add my-new-file
+----
+or use the interactive add, `git add -i`, which lets you pick from a 
+list.
+
+The changes in the staging area can now be committed:
+[source,shell]
+----
+$ git commit
+----
+which opens an editor for a commit message, or
+[source,shell]
+----
+$ git commit -m "message"
+----
+
+What can go wrong?
+
+_Typo in commit message_
+
+Use `git commit --amend` to open an editor to edit the message.
+
+_Typo in the code_
+
+Edit the code, use `git add -u` to stage the change, then 
+`git commit --amend --no-edit`.
+The added command line argument avoids opening the editor to edit the
+commit message.
+
+_Forgot to make the branch_
+
+If you forget to make the branch and just start editing, what you do 
+depends on when you realized the branch hadn't been made.
+
+* Before staging: just make the branch. No special action needed.
+* After staging: use `git restore --staged <file>...` to remove the 
+staged files. The edits remain in your working copy.
+* After committing the change, including if you made multiple commits: 
+
+** make the branch at the current commit, `git branch <branch-name>`, 
+** move the HEAD back to where it started, `git reset --hard HEAD~n` 
+(omit n if just one commit), and 
+** checkout the branch you just made, `git checkout <branch-name>`.
+
+=== Share the changes to the remote
+
+Before sharing your code to the remote you need to pull in any updates
+from the upstream.
+If the work took a long time, you might need to do this more than once
+while you are working on the issue.
+But in any case, it needs to be done before you push to the remote.
+
+[source,shell]
+----
+$ git fetch
+$ git rebase origin/main
+----
+The first command brings the database up-to-date. 
+The second does a rebase in your branch. 
+That is, it replays your commits at the end of branch `main`, and
+moves your branch to the last commit in the result. 
+It may detect conflicts, which must be fixed before proceding.
+If that is too difficult, abandon the rebase:
+[source,shell]
+----
+$ git rebase --abort
+----
+
+Now you can push to the remote. 
+You can still get conflicts, because others can still update the remote,
+but the window of opportunity for that is now much smaller.
+
+The first time you push the issue branch to the remote, use:
+[source,shell]
+----
+$ git push -u origin TEAM-1234_issue_info
+----
+Here `origin` is the remote that was set when you cloned the Git 
+database.
+The command specifies the branch name to push to on the specified 
+remote.
+The command operates on the current branch.
+The option `-u` can be written `--set-upstream`.
+It says to add an _upstream_ or _tracking reference_, that is used by
+`git pull` and other commands that get information from the remote 
+branch.
+As a result, if you add further commits you can share your work with
+`git push`, or, if you have rebased, with `git push -f`.
