@@ -1,9 +1,7 @@
 = How I use Git
 :source-highlighter: highlight.js
 
-== Preamble
-
-This page introduces how I use Git day-to-day, without much 
+This page documents how I use Git day-to-day, without much 
 detailed background.
 
 == Git Explainers
@@ -84,7 +82,7 @@ https://www.youtube.com/watch?v=bBQJP6D8aGY
 == Why Git? 
 If you are still using something else you might hesitate to 
 make the switch.
-Some reasons are:
+Some reasons to use Git are:
 
 - Git integrates much more easily with automation than alternatives. 
 - Git is free, and it is under active development, and it has 
@@ -282,7 +280,7 @@ Use git commit --amend for updating the last commit.
 
 If the world were simpler, having cloned the main branch of 
 development and updated it, we could share our work by using the 
-command push to update that branch on the remote. 
+command `git push` to update that branch on the remote. 
 However, with many developers wanting to do the same thing, this 
 would lead to conflicts. 
 
@@ -392,18 +390,21 @@ First make sure you are on the branch of record:
 ----
 $ git checkout main
 ----
-Then bring the dadabase up-to-date:
+Then bring the database up-to-date:
 [source,shell]
 ----
 $ git pull
 ----
-and make the new branch with a name based on the issue name:
-[source,shell]
-----
-$ git checkout -b TEAM-1234_issue_info
-----
+and make the new branch with a name based on the issue name.
+We'll refer to this as <branch-name>. 
+It would be something like `TEAM-1234_issue_info`.
 Here `issue_info` is a brief summary of the issue, all lowercase,
 with underscores instead of spaces.
+[source,shell]
+----
+$ git checkout -b <branch-name>
+----
+
 
 === Edit the code and commit the changes
 
@@ -499,7 +500,7 @@ but the window of opportunity for that is now much smaller.
 The first time you push the issue branch to the remote, use:
 [source,shell]
 ----
-$ git push -u origin TEAM-1234_issue_info
+$ git push -u origin <branch-name>
 ----
 Here `origin` is the remote that was set when you cloned the Git 
 database.
@@ -512,3 +513,370 @@ It says to add an _upstream_ or _tracking reference_, that is used by
 branch.
 As a result, if you add further commits you can share your work with
 `git push`, or, if you have rebased, with `git push -f`.
+
+If you pushed the wrong branch, remove it 
+with `git push -d origin <branch-name>`.
+
+=== Finishing up
+
+When the issue is resolved and the new code has been incorporated in
+the branch of record, there is some cleaning up to do.
+
+On the server, the usual processes should automatically delete the
+branch you created there.
+If they don't, the branch on the remote can be deleted using `git push`:
+
+[source,shell]
+----
+git push -D origin <branch-name>
+----
+
+Locally, you will probbaly want to delete the branch you worked on:
+[source,shell]
+----
+git pull
+git checkout main
+git branch -d <branch-name>
+----
+The `pull` updates the local database with the new state of main 
+after your changes so it knows the merge has taken place.
+You need to change branches for the delete to work; `main` is as 
+good a choice as any.
+Finally you can delete the branch without warnings.
+
+== Fixing Conflicts and a rebase example
+
+When bringing a branch, such as an issue branch, up-to-date with the
+branch of record, the process is roughly like this:
+[source,text]
+----
+git fetch
+git rebase origin/main
+loop: (fix merge conflicts)
+  git rebase --continue
+finally: git push -f
+----
+
+=== Conflict: two commits change the same line of code
+
+This example has a Git repository with one file, `f1.txt`.
+
+On branch main, the file is created with three lines 
+containing `a`, `b` and `c` respectively.
+
+.On branch `main`, `f1.txt`
+[source,text]
+----
+a
+b
+c
+----
+
+Then a branch `b2` is created. 
+On it, `f1.txt` is edited _twice_ to make two commits. 
+The first commit changes the second line to `x`. 
+The next adds `z` as a fourth line.
+
+.On branch `b2`, `f1.txt`, first commit
+[source,text]
+----
+a
+x
+c
+----
+
+.On branch `b2`, `f1.txt`, second commit
+[source,text]
+----
+a
+x
+c
+z
+----
+
+Back on branch main, `f1.txt` is edited so that the second line 
+contains `m` instead of `b`. 
+This conflicts with the change on branch `b2`.
+
+.On branch `main`, `f1.txt`, first commit
+[source,text]
+----
+a
+m
+c
+----
+
+Then a rebase is started for `b2`: `git rebase main`.
+
+We get
+
+[source,text]
+error: could not apply <commit-2>... Change line 2
+Resolve all conflicts manually, mark them as resolved with
+"git add/rm <conflicted_files>", then run "git rebase --continue".
+You can instead skip this commit: run "git rebase --skip".
+To abort and get back to the state before "git rebase", run "git rebase --abort".
+Could not apply <commit-2>... Change line 2
+Auto-merging f1.txt
+CONFLICT (content): Merge conflict in f1.txt
+----
+
+The output of git status is shown below. It says that this is an 
+interactive rebase, like rebase -i.
+
+[source,shell]
+----
+$ git status
+interactive rebase in progress; onto <main-head>
+Last command done (1 command done):
+   pick <commit-2> Change line 2
+Next command to do (1 remaining command):
+   pick cdca5ba Add line at end
+  (use "git rebase --edit-todo" to view and edit)
+You are currently rebasing branch 'b2' on '<main-head>'.
+  (fix conflicts and then run "git rebase --continue")
+  (use "git rebase --skip" to skip this patch)
+  (use "git rebase --abort" to check out the original branch)
+
+Unmerged paths:
+  (use "git restore --staged <file>..." to unstage)
+  (use "git add <file>..." to mark resolution)
+        both modified:   f1.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+----
+
+The conflicted file is in the working copy and has unstaged changes.
+
+Looking at `f1.txt` we see:
+
+[source,text]
+----
+$ cat f1.txt
+  a
+  <<<<<<< HEAD
+  m
+  =======
+  x
+  >>>>>>> <commit-2>... Change line 2
+  c
+----
+
+This is `f1.txt` after applying the first commit on `b2`, complete with 
+conflict markers.
+
+This is a merge, but a specialized one.
+As it is a rebase, branch `b2` is being added at the end of `main` after
+`<commit-2>`.
+So `b2` is being merged into `main`, but it is a fast-forward merge that
+does not need a merge commit (a commit with two parents).
+
+Any file in the conflicted commit that did not have conflicts is,
+or would be already be in the staging area. 
+In this case though, there are no other files.
+
+The conflicted files (in this case just one) are in the working copy. 
+It is not possible to commit the staging area at this point - 
+you have to edit the conflicted file and use git add or git rm to mark 
+the conflict as resolved, which stages the change.
+
+The merge options are shown between the markers. 
+You can edit directly or use `git mergetool`.
+
+Let's assume the conflict is resolved by editing the file so it has
+`mx` on the changed line.
+
+[source,text]
+----
+a
+mx
+c
+----
+
+You would use `git add`, after the edit, to mark the conflict resolved:
+
+[source,text]
+----
+$ git add f1.txt
+----
+
+Once you have marked the conflict as resolved (by adding the edited 
+file to the staging area), you could use `git rebase --continue `to 
+continue rebasing.
+
+What if the merge contained many files and the merge 
+conflict touched just one of them?
+Keeping a record of the change in that file might reduce the amount of 
+work required to validate the change.
+
+Use `git restore --staged f1.txt` 
+to bring the resolved file back to the working copy. 
+Doing this does not undo the conflict resolution. 
+Then, commit the staged, unconflicted files, which are still in the 
+staging area. 
+Then add `f1.txt` back to the staging area, and commit it 
+with an appropriate message.
+
+Finally, to complete the rebase, or move to the next conflict
+
+[source,text]
+----
+$ git rebase --continue
+----
+
+=== Conflict: deleted file in feature branch
+
+Here a branch deletes a file that was changed in the branch of record.
+Suppose that in the shared branch, the file is still in use and 
+gets updated.
+Now when you try to rebase, you are attempting to remove a file that 
+has been updated.
+This results in a merge conflict, because it is not obvious whether 
+you should delete the file, given that it has changed. 
+
+The error message in this case is like the following:
+
+....
+error: could not apply <deleting-commit>... Delete file
+Resolve all conflicts manually, mark them as resolved with
+"git add/rm <conflicted_files>", then run "git rebase --continue".
+You can instead skip this commit: run "git rebase --skip".
+To abort and get back to the state before "git rebase", run "git rebase --abort".
+Could not apply <deleting-commit>... Delete file
+CONFLICT (modify/delete): for-deletion.txt deleted in <deleting-commit>... Delete file and modified in HEAD. Version HEAD of for-deletion.txt left in tree.
+....
+
+Note - `<deleting-commit>` is the commit ID of the commit that deleted 
+the file.
+
+One key piece of information in this output is that the modified file 
+is _in the tree_: 
+
+ Version HEAD of for-deletion.txt left in tree
+
+The text `<deleting-commit>... Delete file` identifies the commit 
+on the branch being rebased.
+
+Using git status shows:
+----
+$ git status
+interactive rebase in progress; onto <main-head>
+Last command done (1 command done):
+   pick <deleting-commit> Delete file
+No commands remaining.
+You are currently rebasing branch 'b' on '<main-head>'.
+  (fix conflicts and then run "git rebase --continue")
+  (use "git rebase --skip" to skip this patch)
+  (use "git rebase --abort" to check out the original branch)
+
+Unmerged paths:
+  (use "git restore --staged <file>..." to unstage)
+  (use "git add/rm <file>..." as appropriate to mark resolution)
+        deleted by them: for-deletion.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+----
+
+The text 
+
+ deleted by them: for-deletion.txt 
+
+tells you that the file is still in the working tree: it is _deleted 
+by them_ not _deleted by us_. 
+In this context, _we_ are the _shared branch_, not 
+the _personal branch_. 
+
+You can edit the file.
+
+To choose to remove it, use `git rm`.
+
+To choose to keep the file, use `git add`. 
+
+The next two subsections try each of these options.
+
+==== Removing the conflicted file
+
+For removing the file we see in the terminal:
+
+[source,shell]
+----
+$ git rm for-deletion.txt
+rm 'for-deletion.txt'
+
+$ git status
+interactive rebase in progress; onto <main-head>
+Last command done (1 command done):
+   pick <deleting-commit> Delete file
+No commands remaining.
+You are currently rebasing branch 'b' on '<main-head>'.
+  (all conflicts fixed: run "git rebase --continue")
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        deleted:    for-deletion.txt
+----
+
+==== Keeping the conflicted file
+
+In this case the terminal shows:
+
+[source,shell]
+----
+$ git add for-deletion.txt
+
+$ git status
+interactive rebase in progress; onto <main-head>
+Last command done (1 command done):
+   pick <deleting-commit> Delete file
+No commands remaining.
+You are currently rebasing branch 'b' on '<main-head>'.
+  (all conflicts fixed: run "git rebase --continue")
+
+nothing to commit, working tree clean
+----
+
+In both cases the conflicts are resolved.
+
+Then continue the rebase.
+
+=== Conflict: Feature branch changes deleted file
+
+You are working on a feature branch. 
+You change a file.
+Meanwhile, someone merges a change that deletes a file into the main of
+record.
+
+
+In this case the conflict message is:
+....
+error: could not apply <change-commit>... Add a line to for-deletion
+Resolve all conflicts manually, mark them as resolved with
+"git add/rm <conflicted_files>", then run "git rebase --continue".
+You can instead skip this commit: run "git rebase --skip".
+To abort and get back to the state before "git rebase", run "git rebase --abort".
+Could not apply <change-commit>... Add a line to for-deletion
+CONFLICT (modify/delete): for-deletion.txt deleted in HEAD and modified in <change-commit>... Add a line to for-deletion. Version <change-commit>... Add a line to for-deletion of for-deletion.txt left in tree.
+....
+
+The file for deletion is left in the tree.
+You can use `git add` to confirm you want to keep the file, 
+and `git rm` to confirm that you will discard your changes 
+and accept the deletion from the shared branch.
+
+In the latter case, it may be necessary to make other changes to put 
+the code you had sought to change in some other file. 
+For example, you might simply make a copy of the file with a different 
+name and commit that, while accepting the deletion of the original file. 
+Changing the file name could lead to other changes.
+
+=== Conflict: Branch deletes a file that was already deleted
+
+Consider working on a personal branch, based on a shared branch, 
+where you delete a file.
+Meanwhile, another change on the shared branch also deletes the file.
+
+Git notices that both branches seek the same outcome for the file:
+....
+dropping 4bdd184fe29c6d8b74aebfea721183d8d6de7498 Delete file -- patch contents already upstream
+Successfully rebased and updated refs/heads/b.
+....
