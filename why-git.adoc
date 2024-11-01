@@ -1,0 +1,11 @@
+= Why Git? 
+If you are still using something else you might hesitate to 
+make the switch.
+Some reasons to use Git are:
+
+- Git integrates much more easily with automation than alternatives. 
+- Git is free, and it is under active development, and it has 
+an enormous user base. 
+- Git has been integrated all modern IDEs and code review tools. 
+- Many tools built around Git are available for complex or novel 
+situations.

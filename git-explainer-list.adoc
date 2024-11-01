@@ -1,0 +1,76 @@
+= Git Explainers
+
+Git for ages 4 and up 
+https://www.youtube.com/watch?v=1ffBJ4sVUb4
+
+Introduction to Git - talk by Scott Chacon 
+https://www.youtube.com/watch?v=xbLVvrb2-fY
+
+Scott Hanselman Git 101 Basics - Computer Stuff They Didn't Teach You #4 
+https://www.youtube.com/watch?v=WBg9mlpzEYU
+
+Git Internals by John Britton of GitHub - CS50 Tech Talk 
+https://www.youtube.com/watch?v=lG90LZotrpo
+
+Interactive repository visualizer 
+http://git-school.github.io/visualizing-git/
+
+Think like a Git 
+https://think-like-a-git.net/
+
+Git from the Bits Up 
+https://www.youtube.com/watch?v=MYP56QJpDr4
+
+Subversion and Mercurial Explainer, relevant to Git as well 
+https://hginit.github.io/00.html
+
+Mary Rose Cook - Git from the Inside Out 
+https://maryrosecook.com/blog/post/git-from-the-inside-out
+
+MIT Git Lecture Lecture 6: Version Control (git) (2020) 
+https://www.youtube.com/watch?v=2sjqTHE0zok
+
+A classic, don't miss it 
+https://t.co/IMYMBki4sp 
+or, if you don't enjoy swearing, 
+https://dangitgit.com/
+
+A Plumber's Guide to Git 
+https://alexwlchan.net/a-plumbers-guide-to-git/
+
+Tom Preston-Werner A Git Parable 
+https://tom.preston-werner.com/2009/05/19/the-git-parable.html
+
+The Git Parable in video form 
+https://www.youtube.com/watch?v=jm7QsI-nNjk
+
+A Game - Oh My Git 
+https://ohmygit.org/
+
+Nick Farina - Git is Simpler Than You Think 
+https://nfarina.com/post/9868516270/git-is-simpler
+
+Interactive Visualizer - Learn Git Branching 
+https://learngitbranching.js.org/
+
+Intro for non-developers: Git For Humans 
+https://speakerdeck.com/alicebartlett/git-for-humans
+
+A book - Version Control by Example 
+https://ericsink.com/vcbe/index.html
+
+Git Immersion 
+https://gitimmersion.com/
+
+The Git-o-lite slide show 
+https://gitolite.com/gcs.html#(1)
+
+Git and GitHub for Poets 
+https://www.youtube.com/playlist?list=PLRqwX-V7Uu6ZF9C0YMKuns9sLDzK6zoiV
+
+The Atlassian Tutorial 
+https://www.atlassian.com/git
+
+Jim Weirich Source Control Made Easy 
+https://www.youtube.com/watch?v=bBQJP6D8aGY
+

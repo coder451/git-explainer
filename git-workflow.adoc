@@ -1,0 +1,170 @@
+= Workflow
+:source-highlighter: highlight.js
+
+== Get the up-to-date code
+
+Make a new branch for the issue.
+We'll assume the issue is identified by `TEAM-1234`.
+You will likely already have a Git database and working copy for
+the code in your local file system. 
+If not, get one using `git clone`.
+Then make a branch for the work.
+First make sure you are on the branch of record:
+
+[source,shell]
+----
+$ git checkout main
+----
+Then bring the database up-to-date:
+[source,shell]
+----
+$ git pull
+----
+and make the new branch with a name based on the issue name.
+We'll refer to this as <branch-name>. 
+It would be something like `TEAM-1234_issue_info`.
+Here `issue_info` is a brief summary of the issue, all lowercase,
+with underscores instead of spaces.
+[source,shell]
+----
+$ git checkout -b <branch-name>
+----
+
+
+== Edit the code and commit the changes
+
+At this point you are ready to begin editing the code. 
+After your edits, add the file updates and deletions to the staging 
+area:
+
+[source,shell]
+----
+$ git add -u
+----
+
+If you added a file, that will be shown with the following command:
+[source,shell]
+----
+$ git status
+----
+You can then add it explicitly using its name:
+[source,shell]
+----
+$ git add my-new-file
+----
+or use the interactive add, `git add -i`, which lets you pick from a 
+list.
+
+The changes in the staging area can now be committed:
+[source,shell]
+----
+$ git commit
+----
+which opens an editor for a commit message, or
+[source,shell]
+----
+$ git commit -m "message"
+----
+
+What can go wrong?
+
+_Typo in commit message_
+
+Use `git commit --amend` to open an editor to edit the message.
+
+_Typo in the code_
+
+Edit the code, use `git add -u` to stage the change, then 
+`git commit --amend --no-edit`.
+The added command line argument avoids opening the editor to edit the
+commit message.
+
+_Forgot to make the branch_
+
+If you forget to make the branch and just start editing, what you do 
+depends on when you realized the branch hadn't been made.
+
+* Before staging: just make the branch. No special action needed.
+* After staging: use `git restore --staged <file>...` to remove the 
+staged files. The edits remain in your working copy.
+* After committing the change, including if you made multiple commits: 
+
+** make the branch at the current commit, `git branch <branch-name>`, 
+** move the HEAD back to where it started, `git reset --hard HEAD~n` 
+(omit n if just one commit), and 
+** checkout the branch you just made, `git checkout <branch-name>`.
+
+== Share the changes to the remote
+
+Before sharing your code to the remote you need to pull in any updates
+from the upstream.
+If the work took a long time, you might need to do this more than once
+while you are working on the issue.
+But in any case, it needs to be done before you push to the remote.
+
+[source,shell]
+----
+$ git fetch
+$ git rebase origin/main
+----
+The first command brings the database up-to-date. 
+The second does a rebase in your branch. 
+That is, it replays your commits at the end of branch `main`, and
+moves your branch to the last commit in the result. 
+It may detect conflicts, which must be fixed before proceding.
+If that is too difficult, abandon the rebase:
+[source,shell]
+----
+$ git rebase --abort
+----
+
+Now you can push to the remote. 
+You can still get conflicts, because others can still update the remote,
+but the window of opportunity for that is now much smaller.
+
+The first time you push the issue branch to the remote, use:
+[source,shell]
+----
+$ git push -u origin <branch-name>
+----
+Here `origin` is the remote that was set when you cloned the Git 
+database.
+The command specifies the branch name to push to on the specified 
+remote.
+The command operates on the current branch.
+The option `-u` can be written `--set-upstream`.
+It says to add an _upstream_ or _tracking reference_, that is used by
+`git pull` and other commands that get information from the remote 
+branch.
+As a result, if you add further commits you can share your work with
+`git push`, or, if you have rebased, with `git push -f`.
+
+If you pushed the wrong branch, remove it 
+with `git push -d origin <branch-name>`.
+
+== Finishing up
+
+When the issue is resolved and the new code has been incorporated in
+the branch of record, there is some cleaning up to do.
+
+On the server, the usual processes should automatically delete the
+branch you created there.
+If they don't, the branch on the remote can be deleted using `git push`:
+
+[source,shell]
+----
+git push -D origin <branch-name>
+----
+
+Locally, you will probbaly want to delete the branch you worked on:
+[source,shell]
+----
+git pull
+git checkout main
+git branch -d <branch-name>
+----
+The `pull` updates the local database with the new state of main 
+after your changes so it knows the merge has taken place.
+You need to change branches for the delete to work; `main` is as 
+good a choice as any.
+Finally you can delete the branch without warnings.
