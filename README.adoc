@@ -1,0 +1,4 @@
+= Notes on Git
+
+Herewith a few notes on Git, mostly so I can remember things I used
+to do.
