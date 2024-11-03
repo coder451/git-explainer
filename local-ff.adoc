@@ -1,0 +1,42 @@
+= Fast-forward merge on local branches
+
+If you need to do some work on a local branch A, but want to keep the
+state so it is easy to revert to, you can make a branch B  
+from A and work on that.
+
+Maybe while you are working on B, you make some additional, 
+mostly-unrelated changes to the original branch A.
+
+How to bring them back together?
+
+To bring the A changes into B at any stage, make sure you are on 
+B:
+[source,shell]
+----
+$ git checkout B
+----
+and then rebase against A
+
+[source,shell]
+----
+$ git rebase A
+----
+This may result in conflicts, which are resolved in the usual way.
+
+When you are satisfied with B, you perform, if necessary, a final 
+rebase against A. 
+Then do a fast-forward merge:
+
+[source,shell]
+----
+$ checkout A
+$ git merge --ff B
+----
+Now HEAD for A points at the tip of B, and there is a linear history.
+The command `git branch` shows both A and B branches. 
+You no longer need B, so remove it:
+
+[source,shell]
+----
+$ git branch -d B
+----
