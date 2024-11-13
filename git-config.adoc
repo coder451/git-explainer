@@ -1,0 +1,10 @@
+= Configuring Git
+
+These are some useful commands.
+
+== Updating values
+
+If you set a value in git config, and then later set it agin, Git
+does not overwrite the old one,  it just adds a new line.
+To remove the old one, use git config --unset-all <name>. 
+Add the --global flag if the one you want is global. 
